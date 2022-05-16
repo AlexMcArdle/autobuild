@@ -82,6 +82,10 @@ class AutobuildTool(autobuild_base.AutobuildBase):
                             default=None,
                             dest='archive_filename',
                             help='the filename of the archive that autobuild will create')
+        parser.add_argument('--archive-directory',
+                            default=None,
+                            dest='archive_directory',
+                            help='the directory where autobuild will create the archive file')
         parser.add_argument('--skip-license-check',
                             action='store_false',
                             default=False,
@@ -144,7 +148,7 @@ class AutobuildTool(autobuild_base.AutobuildBase):
             build_dirs = [config.get_build_directory(None, platform)]
         is_clean = True
         for build_dir in build_dirs:
-            package(config, build_dir, platform, archive_filename=args.archive_filename,
+            package(config, build_dir, platform, archive_directory=args.archive_directory, archive_filename=args.archive_filename,
                     archive_format=args.archive_format, clean_only=args.clean_only, results_file=args.results_file, dry_run=args.dry_run)
 
 
@@ -152,7 +156,7 @@ class PackageError(AutobuildError):
     pass
 
 
-def package(config, build_directory, platform_name, archive_filename=None, archive_format=None, clean_only=False, results_file=None, dry_run=False):
+def package(config, build_directory, platform_name, archive_directory=None, archive_filename=None, archive_format=None, clean_only=False, results_file=None, dry_run=False):
     """
     Create an archive for the given platform.
     Returns True if the archive is not dirty, False if it is
@@ -241,14 +245,22 @@ def package(config, build_directory, platform_name, archive_filename=None, archi
     files.add(metadata_file_name)
 
     config_directory = os.path.dirname(config.path)
-    if not archive_filename:
+    if not archive_directory:
         tardir = config_directory
+    else:
+        tardir = archive_directory
+
+    if not os.path.isabs(tardir):
+        tardir = os.path.abspath(os.path.join(config_directory, tardir))
+
+    if not archive_filename:
+        # tardir = config_directory
         tarname = _generate_archive_name(metadata_file.package_description, build_id, platform_name)
         tarfilename = os.path.join(tardir, tarname)
     elif os.path.isabs(archive_filename):
         tarfilename = archive_filename
     else:
-        tarfilename = os.path.abspath(os.path.join(config_directory, archive_filename))
+        tarfilename = os.path.abspath(os.path.join(tardir, archive_filename))
     logger.debug(tarfilename)
     if dry_run:
         for f in files:

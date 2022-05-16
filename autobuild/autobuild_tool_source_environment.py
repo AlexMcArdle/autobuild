@@ -699,6 +699,9 @@ def internal_source_environment(configurations, varsfile):
         '32': 'i386',
         '64': 'x86_64',
         }[os.environ["AUTOBUILD_ADDRSIZE"]]
+    # Fix for ARM64
+    if (os.environ["AUTOBUILD_PLATFORM"] == 'darwin_arm64'):
+        exports["AUTOBUILD_CONFIGURE_ARCH"] = 'arm64'
 
     if common.is_system_windows():
         try:

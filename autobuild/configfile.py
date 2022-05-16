@@ -559,6 +559,8 @@ class PackageDescription(common.Serialized):
             target_platform = self.platforms[platform]
         elif platform.endswith('64'):
             base_platform = platform[0:len(platform)-2]
+            if base_platform not in self.platforms:
+                base_platform = platform.split('_')[0]
             if base_platform in self.platforms:
                 target_platform = self.platforms[base_platform]
                 if package_selected_platform != base_platform:
