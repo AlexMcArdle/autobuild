@@ -59,7 +59,7 @@ class AutobuildError(RuntimeError):
 PLATFORM_DARWIN    = 'darwin'
 PLATFORM_DARWIN64  = 'darwin64'
 PLATFORM_DARWIN_IOS  = 'darwin_ios'
-PLATFORM_DARWIN_ARM64 = 'darwin_arm64'
+PLATFORM_DARWIN64_ARM64 = 'darwin64_arm64'
 PLATFORM_WINDOWS   = 'windows'
 PLATFORM_WINDOWS64 = 'windows64'
 PLATFORM_LINUX     = 'linux'
@@ -144,7 +144,7 @@ def check_platform_system_match(platform):
     elif platform in (PLATFORM_LINUX, PLATFORM_LINUX64):
         if not sys.platform.startswith('linux'):
             platform_should_be="Linux"
-    elif platform in (PLATFORM_DARWIN, PLATFORM_DARWIN64, PLATFORM_DARWIN_IOS, PLATFORM_DARWIN_ARM64):
+    elif platform in (PLATFORM_DARWIN, PLATFORM_DARWIN64, PLATFORM_DARWIN_IOS, PLATFORM_DARWIN64_ARM64):
         if sys.platform != 'darwin':
             platform_should_be="Mac OS X"
     elif platform != PLATFORM_COMMON:
@@ -171,7 +171,7 @@ def establish_platform(specified_platform=None, addrsize=DEFAULT_ADDRSIZE):
     elif sys.platform == 'darwin':
         if addrsize == 64:
             if platform.machine() == 'arm64':
-                Platform = PLATFORM_DARWIN_ARM64
+                Platform = PLATFORM_DARWIN64_ARM64
             else:
                 Platform = PLATFORM_DARWIN64
         else:
